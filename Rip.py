@@ -79,9 +79,12 @@ def main():
         logProc([ffmpeg])
         logProc([ffprobe])
         logging.info("Testing complete")
+    # Where the magic happens - Triggers on imports from download clients
     elif evtype == 'Download':
+        # Ignore upgrades, since we probably already have subtitles
         if getenv('sonarr_isupgrade') == True:
             pass
+        # Get file name and path
         f = getenv('sonarr_episodefile_path')
         cmd = [ffprobe,
                '-v', 'error',
@@ -104,8 +107,11 @@ def main():
         # Remove Non-English
         subs = []
         for i, x in enumerate(rawsubs):
+            # If the subtitle has a good language code
             if rawsubs[i][lang] in desirables:
+                # And if the subtitle is in a good format
                 if rawsubs[i][codec] in extractable:
+                    # Put that track in the list of good subtitles
                     subs.append(rawsubs[i])
                 else:
                     logging.info(
@@ -114,7 +120,7 @@ def main():
                 logging.info(
                     "Track {} not a desired language".format(rawsubs[i][track]))
 
-        # If there's only one track that can be extracted, extract it
+        # If there's only one track that is good, extract it
         if len(subs) == 1:
             logging.info(
                 "Only one {} subtitle track, extracting...".format(subs[0][lang]))
@@ -125,7 +131,7 @@ def main():
     else:
         logging.warning("Unknown Event Type!")
 
-
+# Put code in a try/except in order to facilitate better exception logging
 try:
     main()
 except Exception as err:
