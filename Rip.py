@@ -148,7 +148,6 @@ def main():
             for i, x in enumerate(rawaudio):
                 rawaudio[i] = x.split(",")
             # Process Audio to determine Default Language
-            audio = []
             sub_track = {}
             determiner = None
             for check in ['default', 'forced']:
