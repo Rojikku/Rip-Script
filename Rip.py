@@ -71,7 +71,7 @@ def extract(f, track):
 
 def main():
     # If no event type, error out
-    if evtype == None:
+    if evtype is None:
         logging.warning("No event type specified!")
     # If testing, verify ffmpeg and ffprobe are installed and work
     elif evtype == 'Test':
