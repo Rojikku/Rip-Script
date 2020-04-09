@@ -15,9 +15,13 @@ Fortunately, I'm mounting /config, so I made a directory of `/config/Scripts` fo
 
 2. Extract the files, and rename the folders to `ffmpeg` and `python` respectively, then move them to the `/config/Scripts/bin` folder.  
 
-3. In Sonarr, Settings > Connect > Custom Scripts and add the script (Likely `/config/Scripts/Rip.py`).
+3. (Optionally) Make a sync.sh script in the git directory, which is in .gitignore, to rsync the Rip.py script into `/config/Scripts`.
 
-4. Set On Import and On Rename, the rest can be off.
+4. Run your sync.sh script from above, or copy the Rip.py script over to `/config/Scripts/Rip.py`.
+
+5. In Sonarr, Settings > Connect > Custom Scripts and add the script (Likely `/config/Scripts/Rip.py`).
+
+6. Set On Import and On Rename, the rest can be off.
 
 If you do anything different, modify the script accordingly. It's mostly setup to be easy enough to modify.
 
