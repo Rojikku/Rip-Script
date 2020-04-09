@@ -35,5 +35,14 @@ Fortunately, I'm mounting /config, so I made a directory of `/config/Scripts` fo
 If you do anything different, modify the script accordingly. It's mostly setup to be easy enough to modify.
 
 ## Limitations
-As far as the documentation shows, this will only trigger when a file is imported from a download client.
+* As far as the documentation shows, this will only trigger when a file is imported from a download client.
 Manual imports will not trigger the script.
+* Can't figure out the correct track if there's more than two subtitle tracks
+
+## Manual Fixes
+If you get a wrong track, just go into the directory where the wrong subtitles exist, and do something like:
+```
+rm *.srt
+for f in *.mkv; do ffmpeg -n -i "$f" -map 0:s:X "$(echo $f | sed s/.mkv/.en.default.srt/)"; done
+```
+With X in 0:s:X being the correct subtitle track, or 0:X if you use the absolute number, instead of just the first or second subtitle track.
