@@ -84,18 +84,23 @@ def main():
         # Ignore upgrades, since we probably already have subtitles
         if getenv('sonarr_isupgrade') == True:
             pass
+        entry_format = 'stream=index:stream=codec_name:stream_disposition=default,forced:stream_tags=language'
+        # Formatting Info
+        info = {
+            'track': 0,
+            'codec': 1,
+            'default': 2,
+            'forced': 3,
+            'lang': 4
+        }
         # Get file name and path
         f = getenv('sonarr_episodefile_path')
         cmd = [ffprobe,
                '-v', 'error',
                '-select_streams', 's',
-               '-show_entries', 'stream=index:stream=codec_name:stream_tags=language',
+               '-show_entries', entry_format,
                '-of', 'csv=p=0',
                f]
-        # Formatting Info
-        track = 0
-        codec = 1
-        lang = 2
         # Run and return logs
         logging.info("Starting rip process for {}...".format(f))
         out, error = logProc(cmd)
@@ -108,28 +113,95 @@ def main():
         subs = []
         for i, x in enumerate(rawsubs):
             # If the subtitle has a good language code
-            if rawsubs[i][lang] in desirables:
+            if rawsubs[i][info['lang']] in desirables:
                 # And if the subtitle is in a good format
-                if rawsubs[i][codec] in extractable:
+                if rawsubs[i][info['codec']] in extractable:
                     # Put that track in the list of good subtitles
                     subs.append(rawsubs[i])
                 else:
                     logging.info(
-                        "Track {} not extractable".format(rawsubs[i][track]))
+                        "Track {} not extractable".format(rawsubs[i][info['track']]))
             else:
                 logging.info(
-                    "Track {} not a desired language".format(rawsubs[i][track]))
+                    "Track {} not a desired language".format(rawsubs[i][info['track']]))
 
         # If there's only one track that is good, extract it
-        if len(subs) == 1:
+        if len(subs) == 0:
+            logging.error("Found no valid subtitle tracks!")
+        elif len(subs) == 1:
             logging.info(
-                "Only one {} subtitle track, extracting...".format(subs[0][lang]))
-            out, error = extract(f, subs[0][track])
+                "Only one {} subtitle track, extracting...".format(subs[0][info['lang']]))
+            out, error = extract(f, subs[0][info['track']])
             logging.info("Extracted? (See Above)")
+        elif len(subs) == 2:
+            logging.info("Found two subtitle tracks, attempting to deduce...")
+            cmd = [ffprobe,
+                   '-v', 'error',
+                   '-select_streams', 'a',
+                   '-show_entries', entry_format,
+                   '-of', 'csv=p=0',
+                   f]
+            out, error = logProc(cmd)
+            # Split lines
+            rawaudio = list(out.splitlines())
+            # Split into 2D array
+            for i, x in enumerate(rawaudio):
+                rawaudio[i] = x.split(",")
+            # Process Audio to determine Default Language
+            audio = []
+            sub_track = {}
+            determiner = None
+            for check in ['default', 'forced']:
+                logging.debug(
+                    "Trying to differentiate based on flag: {}".format(check))
+                for track in subs:
+                    if track[info[check]] == '1':
+                        sub_track['default'] = track
+                    else:
+                        sub_track['regular'] = track
+                if len(list(sub_track)) == 2:
+                    determiner = check
+                    break
+            if determiner is None:
+                logging.error("No difference in flags, giving up!")
+            else:
+                logging.debug(
+                    "Found difference in flag: {}".format(determiner))
+            logging.debug("Checking for two audio tracks...")
+            answer = None
+            if len(rawaudio) == 2:
+                # If one is forced, and one is not, use the non-forced track
+                if determiner == 'forced':
+                    answer = sub_track['regular']
+                # If one is default, and one is not, figure out the correct track based on which audio is default
+                if determiner == 'default':
+                    for i, x in enumerate(rawaudio):
+                        if rawaudio[i][info['default']] == '1':
+                            if rawaudio[i][info['lang']] in desirables:
+                                logging.info(
+                                    "Determined that desired language is default, using non-default subtitle track!")
+                                answer = sub_track['regular']
+                            else:
+                                logging.info(
+                                    "Determined that desired language is not default, using default subtitle track!")
+                                answer = sub_track['default']
+
+            else:
+                logging.error(
+                    "Insufficient information to determine correct track, giving up!")
+            if answer is not None:
+                out, error = extract(f, answer[info['track']])
+                logging.info("Extracted? (See Above)")
+            else:
+                logging.error(
+                    "Insufficient information to determine correct track, giving up!")
+
         else:
-            logging.warning("More than one subtitle track, I give up!")
+            logging.debug("Found {} subtitle tracks".format(len(subs)))
+            logging.warning("More than two subtitle tracks, I give up!")
     else:
         logging.warning("Unknown Event Type!")
+
 
 # Put code in a try/except in order to facilitate better exception logging
 try:
