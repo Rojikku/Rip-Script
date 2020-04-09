@@ -1,7 +1,7 @@
 # Rip-Script
 A Subtitle Rip Script For Sonarr
 
-Rip Script is designed to work in the linuxserver/sonarr:latest container, but can likely be used outside with some customization.
+Rip Script is designed to work in the linuxserver/sonarr:preview container, but can likely be used outside with some customization.
 
 In that case, first line should be replaced with:  
 `#!/usr/bin/env python3`  
