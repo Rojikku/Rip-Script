@@ -7,6 +7,15 @@ In that case, first line should be replaced with:
 `#!/usr/bin/env python3`  
 Likewise, if your python3 binary is located elsewhere, update the first line
 
+## Inspiration
+
+When using Emby, on the TV version, if On The Fly subtitle ripping is turned on, there are situations where no subtitles will appear.
+
+With On The Fly turned off, transcoding happens on many clients automatically, including the web client. This nearly doubles the required buffer time as compared to no subtitles.
+
+However, if an external subtitle file is provided, this issue is minimized.
+Therefore, it is more optimal to extract subtitles to an external file. This script is designed to automate as much of that as possible.
+
 ## Setup
 Rip Script requires Python3, ffmpeg, and ffprobe.  
 None of these are available in the docker container this is designed for.  
