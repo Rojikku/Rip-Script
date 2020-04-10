@@ -39,9 +39,6 @@ Since it would be annoying to change the larger variables every time you update 
 
 You can simply set your variables in Variables.py, and it should override the ones in the script.
 
-You will likely still have to change "import Variables" to "from Variables import A, B, C" with A, B, C being whatever variables you overrode.  
-Open to better solutions for this.
-
 ## Limitations
 * As far as the documentation shows, this will only trigger when a file is imported from a download client.
 Manual imports will not trigger the script.

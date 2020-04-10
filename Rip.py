@@ -36,7 +36,7 @@ evtype = getenv('sonarr_eventtype', None)
 logging.info("Event Type: {}".format(evtype))
 # Optionally, load overrides from Variables.py
 # This allows users to have defaults that won't change, as this is .gitignore-ed
-import Variables
+from Variables import *
 # Run a subprocess and return the logs
 
 
