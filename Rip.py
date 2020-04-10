@@ -1,6 +1,6 @@
 #!/config/Scripts/bin/python/install/bin/python3
 import sys
-from os import getenv, chdir, path
+from os import getenv, chdir, path, walk, listdir
 import subprocess
 import logging
 import pathlib
@@ -205,6 +205,24 @@ def main():
         # Get file name and path
         f = getenv('sonarr_episodefile_path')
         analyze(f)
+    elif evtype == 'Manual':
+        # Get Current Directory, which will start the loop
+        start = pathlib.Path.cwd()
+        logging.info("Starting manual analyze from {}".format(start))
+        dirs = [pathlib.Path(x[0]) for x in walk(start)][1:]
+        queue = []
+        for season in dirs:
+            logging.info("Analyzing folder: {}".format(season))
+            for file in listdir(season):
+                if file.endswith(".mkv"):
+                    name = file.split(".")[0]
+                    dest = name + sub_ext
+                    if not path.exists(season / dest):
+                        queue.append(season / file)
+        length = len(queue)
+        for i, file in enumerate(queue, 1):
+            logging.info("Working on file {} of {}".format(i, length))
+            analyze(file)
     else:
         logging.warning("Unknown Event Type!")
 
