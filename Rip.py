@@ -1,5 +1,4 @@
 #!/config/Scripts/bin/python/install/bin/python3
-from Variables import *
 import sys
 from os import getenv, chdir, path, walk, listdir
 import subprocess
