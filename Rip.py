@@ -165,6 +165,14 @@ def analyze(f):
             logging.debug("Found difference in flag: {}".format(determiner))
         logging.debug("Checking for two audio tracks...")
         answer = None
+        if len(rawaudio) == 1:
+            if determiner == 'default':
+                if rawaudio[0][info['lang']] in desirables:
+                    logging.info("With one audio track: Determined that desired language is default, using non-default subtitle track!")
+                    answer = sub_track['regular']
+                else:
+                    logging.info("With one audio track: Determined that desired language is not default, using default subtitle track!")
+                    answer = sub_track['default']
         if len(rawaudio) == 2:
             # If one is forced, and one is not, use the non-forced track
             if determiner == 'forced':
