@@ -1,4 +1,5 @@
 #!/config/Scripts/bin/python/install/bin/python3
+from Variables import *
 import sys
 from os import getenv, chdir, path, walk, listdir
 import subprocess
@@ -20,7 +21,6 @@ ffmpeg = "./ffmpeg"
 chdir(ffpath)
 #Setup Logging
 logging.basicConfig(filename=log, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
-
 
 # Variables
 # Formats that are acceptable
@@ -71,8 +71,10 @@ def extract(f, track):
         logging.warning("File Doesn't Exist: {}".format(dest))
     return (out, error)
 
+
 # Function that Analyzes and Rips Subs from Files, taking in file as f
 def analyze(f):
+    # Output Formatting from ffprobe
     entry_format = 'stream=index:stream=codec_name:stream_disposition=default,forced:stream_tags=language'
     # Formatting Info
     info = {
@@ -83,11 +85,11 @@ def analyze(f):
         'lang': 4
     }
     cmd = [ffprobe,
-            '-v', 'error',
-            '-select_streams', 's',
-            '-show_entries', entry_format,
-            '-of', 'csv=p=0',
-            f]
+           '-v', 'error',
+           '-select_streams', 's',
+           '-show_entries', entry_format,
+           '-of', 'csv=p=0',
+           f]
     # Run and return logs
     logging.info("Starting rip process for {}...".format(f))
     out, error = logProc(cmd)
@@ -100,34 +102,39 @@ def analyze(f):
     subs = []
     for i, x in enumerate(rawsubs):
         # If the subtitle has a good language code
-        if rawsubs[i][info['lang']] in desirables:
-            # And if the subtitle is in a good format
-            if rawsubs[i][info['codec']] in extractable:
-                # Put that track in the list of good subtitles
-                subs.append(rawsubs[i])
+        try:
+            if rawsubs[i][info['lang']] in desirables:
+                # And if the subtitle is in a good format
+                if rawsubs[i][info['codec']] in extractable:
+                    # Put that track in the list of good subtitles
+                    subs.append(rawsubs[i])
+                else:
+                    logging.info(
+                        "Track {} not extractable".format(rawsubs[i][info['track']]))
             else:
                 logging.info(
-                    "Track {} not extractable".format(rawsubs[i][info['track']]))
-        else:
-            logging.info(
-                "Track {} not a desired language".format(rawsubs[i][info['track']]))
-
-    # If there's only one track that is good, extract it
+                    "Track {} not a desired language".format(rawsubs[i][info['track']]))
+        # If we don't know the language, just append it anyway and hope for the best. If there's two or less it could still work.
+        except IndexError:
+            subs.append(rawsubs[i])
+    # If there's no subs, give up
     if len(subs) == 0:
         logging.error("Found no valid subtitle tracks!")
+    # If there's only one track that is good, extract it
     elif len(subs) == 1:
         logging.info(
             "Only one {} subtitle track, extracting...".format(subs[0][info['lang']]))
         out, error = extract(f, subs[0][info['track']])
         logging.info("Extracted? (See Above)")
-    elif len(subs) == 2:
+    # If there's two or more subs, try for it
+    elif len(subs) >= 2:
         logging.info("Found two subtitle tracks, attempting to deduce...")
         cmd = [ffprobe,
-                '-v', 'error',
-                '-select_streams', 'a',
-                '-show_entries', entry_format,
-                '-of', 'csv=p=0',
-                f]
+               '-v', 'error',
+               '-select_streams', 'a',
+               '-show_entries', entry_format,
+               '-of', 'csv=p=0',
+               f]
         out, error = logProc(cmd)
         # Split lines
         rawaudio = list(out.splitlines())
@@ -144,7 +151,9 @@ def analyze(f):
                 if track[info[check]] == '1':
                     sub_track['default'] = track
                 else:
-                    sub_track['regular'] = track
+                    # Basically, ignore any subtitle tracks after the first two, since I don't know how to handle those
+                    if 'regular' not in sub_track.keys():
+                        sub_track['regular'] = track
             if len(list(sub_track)) == 2:
                 determiner = check
                 break
