@@ -2,3 +2,4 @@ sync.sh
 Test.py
 .vscode
 Variables.py
+__pycache__
