@@ -116,6 +116,7 @@ def analyze(f):
                     "Track {} not a desired language".format(rawsubs[i][info['track']]))
         # If we don't know the language, just append it anyway and hope for the best. If there's two or less it could still work.
         except IndexError:
+            logging.warning("Found a sub without a known language. It's being added, hope it's for the best!")
             subs.append(rawsubs[i])
     # If there's no subs, give up
     if len(subs) == 0:
@@ -154,14 +155,16 @@ def analyze(f):
                     # Basically, ignore any subtitle tracks after the first two, since I don't know how to handle those
                     if 'regular' not in sub_track.keys():
                         sub_track['regular'] = track
+                    else:
+                        logging.warning("Attempting to store multiple non-flagged tracks, probable errors!")
             if len(list(sub_track)) == 2:
                 determiner = check
                 break
         if determiner is None:
             logging.error("No difference in flags, giving up!")
+            return False
         else:
-            logging.debug(
-                "Found difference in flag: {}".format(determiner))
+            logging.debug("Found difference in flag: {}".format(determiner))
         logging.debug("Checking for two audio tracks...")
         answer = None
         if len(rawaudio) == 2:
@@ -182,14 +185,14 @@ def analyze(f):
                             answer = sub_track['default']
 
         else:
-            logging.error(
-                "Insufficient information to determine correct track, giving up!")
+            logging.error("Insufficient information to determine correct track, giving up!")
+            return False
         if answer is not None:
             out, error = extract(f, answer[info['track']])
             logging.info("Extracted? (See Above)")
         else:
-            logging.error(
-                "Insufficient information to determine correct track, giving up!")
+            logging.error("Insufficient information to determine correct track, giving up!")
+            return False
 
     else:
         logging.debug("Found {} subtitle tracks".format(len(subs)))
