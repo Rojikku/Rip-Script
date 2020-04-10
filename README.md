@@ -52,6 +52,8 @@ for f in *.mkv; do ffmpeg -n -i "$f" -map 0:s:X "$(echo $f | sed s/.mkv/.en.defa
 ```
 With X in 0:s:X being the correct subtitle track, or 0:X if you use the absolute number, instead of just the first or second subtitle track.
 
+### Manual Mode
+
 Alternatively, if you have existing content, or manually imported content, and want to run the script on it, you now can with manual mode.
 ```
 sonarr_eventtype="Manual" ./Rip.py
@@ -61,3 +63,7 @@ Personally, I copy Rip.py to Test.py, and change the variables since I'm running
 I call it by full path.
 
 Manual mode will check every folder inside your working directory, and then rip subtitles from all .mkv files in those subdirectories.
+
+### Logs
+If you have access to the Rip.log, it's nice to watch the progress with `tail -f Rip.log` or a similar command.  
+All output goes to this log file instead of the console due it being designed for an environment where a console is not convenient (A docker container).
