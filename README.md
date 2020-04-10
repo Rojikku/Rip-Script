@@ -34,6 +34,11 @@ Fortunately, I'm mounting /config, so I made a directory of `/config/Scripts` fo
 
 If you do anything different, modify the script accordingly. It's mostly setup to be easy enough to modify.
 
+## Customization
+Since it would be annoying to change the larger variables every time you update the script, I added an import for Variables.py (I attached an example).
+
+You can simply set your variables in Variables.py, and it should override the ones in the script.
+
 ## Limitations
 * As far as the documentation shows, this will only trigger when a file is imported from a download client.
 Manual imports will not trigger the script.
