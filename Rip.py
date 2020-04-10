@@ -109,11 +109,9 @@ def analyze(f):
                     # Put that track in the list of good subtitles
                     subs.append(rawsubs[i])
                 else:
-                    logging.info(
-                        "Track {} not extractable".format(rawsubs[i][info['track']]))
+                    logging.info("Track {} not extractable".format(rawsubs[i][info['track']]))
             else:
-                logging.info(
-                    "Track {} not a desired language".format(rawsubs[i][info['track']]))
+                logging.info("Track {} not a desired language".format(rawsubs[i][info['track']]))
         # If we don't know the language, just append it anyway and hope for the best. If there's two or less it could still work.
         except IndexError:
             logging.warning("Found a sub without a known language. It's being added, hope it's for the best!")
@@ -176,12 +174,10 @@ def analyze(f):
                 for i, x in enumerate(rawaudio):
                     if rawaudio[i][info['default']] == '1':
                         if rawaudio[i][info['lang']] in desirables:
-                            logging.info(
-                                "Determined that desired language is default, using non-default subtitle track!")
+                            logging.info("Determined that desired language is default, using non-default subtitle track!")
                             answer = sub_track['regular']
                         else:
-                            logging.info(
-                                "Determined that desired language is not default, using default subtitle track!")
+                            logging.info("Determined that desired language is not default, using default subtitle track!")
                             answer = sub_track['default']
 
         else:
