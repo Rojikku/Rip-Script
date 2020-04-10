@@ -34,7 +34,9 @@ sub_ext = ".{}.default.srt".format(desired_lang)
 evtype = getenv('sonarr_eventtype', None)
 # Output Event Type
 logging.info("Event Type: {}".format(evtype))
-
+# Optionally, load overrides from Variables.py
+# This allows users to have defaults that won't change, as this is .gitignore-ed
+import Variables
 # Run a subprocess and return the logs
 
 
