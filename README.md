@@ -64,6 +64,9 @@ I call it by full path.
 
 Manual mode will check every folder inside your working directory, and then rip subtitles from all .mkv files in those subdirectories.
 
+In contrast, if you have a whole library you want to run, you'd have to do something like this.  
+`for f in ./*/ ; do (cd "$f" && sonarr_eventtype="Manual" ~/GITS/Rip-Script/Test.py) ; done`
+
 ### Logs
 If you have access to the Rip.log, it's nice to watch the progress with `tail -f Rip.log` or a similar command.  
 All output goes to this log file instead of the console due it being designed for an environment where a console is not convenient (A docker container).
