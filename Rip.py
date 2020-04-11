@@ -28,7 +28,7 @@ extractable = ['ass']
 desirables = ['eng', 'en']
 # ISO2 Language Code for desired language
 desired_lang = 'en'
-sub_ext = ".{}.default.srt".format(desired_lang)
+sub_ext = ".{}.default.ass".format(desired_lang)
 # Get Event Type
 evtype = getenv('sonarr_eventtype', None)
 # Output Event Type
