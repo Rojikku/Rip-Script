@@ -157,13 +157,21 @@ def analyze(f):
             if len(list(sub_track)) == 2:
                 determiner = check
                 break
+        answer = None
         if determiner is None:
-            logging.error("No difference in flags, giving up!")
-            return False
+            logging.warning("No difference in flags, hail mary mode ACTIVATED!")
+            if len(rawaudio) == 2:
+                if rawaudio[0][info['lang']] in desirables:
+                    logging.info("First audio language is desired, using second subtitle track!")
+                    answer = subs[1]
+                else:
+                    logging.info("First language is not desired, using first subtitle track!")
+                    answer = subs[0]
+            else:
+                return False
         else:
             logging.debug("Found difference in flag: {}".format(determiner))
         logging.debug("Checking for two audio tracks...")
-        answer = None
         # If there's only one audio track, and it's not the desired language, trust the default subs. It's all you can do.
         if len(rawaudio) == 1:
             if determiner == 'default':
