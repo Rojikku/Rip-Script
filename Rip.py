@@ -178,7 +178,7 @@ def analyze(f):
                 if rawaudio[0][info['lang']] not in desirables:
                     logging.info("With one audio track: Determined that desired language is not default, using default subtitle track!")
                     answer = sub_track['default']
-        if len(rawaudio) == 2:
+        elif len(rawaudio) == 2:
             # If one is forced, and one is not, use the non-forced track
             if determiner == 'forced':
                 answer = sub_track['regular']
