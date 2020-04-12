@@ -194,7 +194,7 @@ def analyze(f):
                             answer = sub_track['default']
 
         else:
-            logging.error("Insufficient information to determine correct track, giving up!")
+            logging.error("Too many audio tracks to determine correct track, giving up!")
             return False
         if answer is not None:
             out, error = extract(f, answer[info['track']])
