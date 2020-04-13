@@ -171,6 +171,7 @@ def analyze(f):
                 logging.info("There's only one audio track, we'll just take the first one!")
                 answer = subs[0]
             else:
+                logging.warning("Hail Mary failed.")
                 return False
         else:
             logging.debug("Found difference in flag: {}".format(determiner))
