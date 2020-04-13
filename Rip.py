@@ -167,6 +167,9 @@ def analyze(f):
                 else:
                     logging.info("First language is not desired, using first subtitle track!")
                     answer = subs[0]
+            elif len(rawaudio) == 1:
+                logging.info("There's only one audio track, we'll just take the first one!")
+                answer = subs[0]
             else:
                 return False
         else:
