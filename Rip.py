@@ -120,8 +120,7 @@ def analyze(f):
         logging.error("Found no valid subtitle tracks!")
     # If there's only one track that is good, extract it
     elif len(subs) == 1:
-        logging.info(
-            "Only one {} subtitle track, extracting...".format(desired_lang)
+        logging.info("Only one {} subtitle track, extracting...".format(desired_lang))
         out, error = extract(f, subs[0][info['track']])
         logging.info("Extracted? (See Above)")
     # If there's two or more subs, try for it
